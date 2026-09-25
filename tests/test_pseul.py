@@ -22,8 +22,10 @@ def test_core_is_the_frozen_study_method():
     assert digest.startswith(pseul.__source_sha256__)
 
 
-@pytest.fixture(scope="module")
-def fitted():
+CONFIG = PseulConfig(n_splits=3, top_k=4, max_shap_samples_per_fold=100, permutation_repeats=2)
+
+
+def leaky_data():
     rng = np.random.default_rng(1)
     n = 400
     X = pd.DataFrame({f"X{i}": rng.normal(size=n) for i in range(6)})
@@ -34,10 +36,14 @@ def fitted():
     registry = {c: PseulFeatureProfile() for c in X.columns}
     registry["TRAP"] = PseulFeatureProfile(label_derived_risk=0.95, definitional_overlap=0.95)
     registry["LATE"] = PseulFeatureProfile(available_at_prediction=False)
+    return X, y, registry
+
+
+@pytest.fixture(scope="module")
+def fitted():
+    X, y, registry = leaky_data()
     model = LGBMClassifier(n_estimators=60, random_state=0, verbose=-1)
-    selector = PSEUL(estimator=model, clinical_profile=registry,
-                     config=PseulConfig(n_splits=3, top_k=4, max_shap_samples_per_fold=100,
-                                        permutation_repeats=2))
+    selector = PSEUL(estimator=model, clinical_profile=registry, config=CONFIG)
     return selector.fit(X, y), X
 
 
@@ -60,3 +66,26 @@ def test_transform_returns_the_selected_columns(fitted):
     out = selector.transform(X)
     assert list(out.columns) == selector.selected_features_
     assert len(out) == len(X)
+
+
+def test_any_tree_ensemble_can_score_the_features():
+    # LightGBM is what the study used, not a requirement: any model SHAP's
+    # TreeExplainer can explain will do, and the registry still decides exclusions
+    from sklearn.ensemble import RandomForestClassifier
+
+    X, y, registry = leaky_data()
+    selector = PSEUL(estimator=RandomForestClassifier(n_estimators=100, random_state=0),
+                     clinical_profile=registry, config=CONFIG).fit(X, y)
+    assert "TRAP" not in selector.selected_features_
+    assert "LATE" not in selector.selected_features_
+
+
+def test_non_tree_models_are_refused():
+    # SHAP stability is computed with TreeExplainer, so a linear model cannot be
+    # the one PSEUL scores with; it can still be trained on the selected subset
+    from sklearn.linear_model import LogisticRegression
+
+    X, y, registry = leaky_data()
+    with pytest.raises(Exception, match="not yet supported by TreeExplainer"):
+        PSEUL(estimator=LogisticRegression(max_iter=1000), clinical_profile=registry,
+              config=CONFIG).fit(X, y)

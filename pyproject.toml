@@ -33,7 +33,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# PSEUL takes any scikit-learn-compatible classifier; the study used LightGBM
+# PSEUL scores features with a tree-based classifier (SHAP stability uses
+# TreeExplainer); the study used LightGBM
 lightgbm = ["lightgbm>=4.0"]
 dev = ["pytest>=7", "lightgbm>=4.0"]
 

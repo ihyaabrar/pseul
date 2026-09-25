@@ -96,8 +96,28 @@ came from features that could not be used in practice.
 pip install "pseul[lightgbm] @ git+https://github.com/ihyaabrar/pseul.git"
 ```
 
-Python 3.10 or later. PSEUL accepts any scikit-learn-compatible classifier; the
-`lightgbm` extra installs the learner the study used.
+Python 3.10 or later. The `lightgbm` extra installs the learner the study used; see
+[Which models work](#which-models-work) for the others.
+
+## Which models work
+
+PSEUL fits a classifier inside its own folds to score the features, and computes
+SHAP stability with `shap.TreeExplainer`. That internal classifier therefore has to
+be **tree-based**. Tested:
+
+| works | does not work |
+|---|---|
+| LightGBM · XGBoost | logistic regression |
+| random forest · extra trees | support vector machines |
+| gradient boosting · HistGradientBoosting | k-nearest neighbours |
+| decision tree | neural networks (MLP) |
+
+The others fail with `Model type not yet supported by TreeExplainer`. The selected
+subsets differ between learners, because each ranks the admissible features its own
+way; the registry's exclusions hold in all of them.
+
+This constrains only the model PSEUL uses to *choose* features. The model you train
+afterwards on `selector.transform(X)` can be anything, a logistic regression included.
 
 ## Quickstart
 
