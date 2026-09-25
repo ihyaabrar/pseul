@@ -5,6 +5,13 @@ Gradio layer at the bottom only wires them to inputs and outputs.
 """
 from __future__ import annotations
 
+# `spaces` has to be imported before anything that could touch CUDA. It exists
+# only on Hugging Face's ZeroGPU hardware; everywhere else the app runs without it.
+try:
+    import spaces
+except ImportError:
+    spaces = None
+
 import dataclasses
 import warnings
 
@@ -152,6 +159,17 @@ def run_pseul(X, y, registry, top_k: int, tau_v: float):
     columns = [c for c in SHOWN if c in summary.columns]
     table = summary[columns].sort_values(["selected", "audit_score"], ascending=[False, False])
     return "\n\n".join(lines), table.round(3)
+
+
+# ZeroGPU refuses to start a Space with no @spaces.GPU function ("No @spaces.GPU
+# function detected during startup"), and free accounts cannot move a new Space
+# to CPU hardware. PSEUL needs no GPU, so this function exists only to pass that
+# check and is never called: every visitor's run stays on the CPU, with no GPU
+# queue and no GPU quota spent.
+if spaces is not None:
+    @spaces.GPU(duration=1)
+    def _zerogpu_startup_check():
+        return None
 
 
 # --------------------------------------------------------------- handlers
