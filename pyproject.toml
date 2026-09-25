@@ -11,8 +11,6 @@ license = { file = "LICENSE" }
 requires-python = ">=3.10"
 authors = [
     { name = "Ihya' Nashirudin Abrar" },
-    { name = "Muhammad Kunta Biddinika" },
-    { name = "Herman Yuliansyah" },
 ]
 keywords = ["feature selection", "data leakage", "prediction landmark",
             "clinical machine learning", "SHAP"]
