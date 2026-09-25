@@ -2,8 +2,8 @@
 
 <p align="center">
   <b>Prediction-landmark-aware feature selection for medical machine learning</b><br>
-  Rank features for what they predict, then keep only the ones that exist at the<br>
-  moment of prediction and do not stand in for the label.
+  Rank features for what they predict, then keep only the ones your registry says<br>
+  exist at the moment of prediction and do not stand in for the label.
 </p>
 
 <p align="center">
