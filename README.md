@@ -1,4 +1,6 @@
-<h1 align="center">PSEUL</h1>
+<p align="center">
+  <img src="assets/pseul-logo.png" alt="PSEUL" width="520">
+</p>
 
 <p align="center">
   <b>Prediction-landmark-aware feature selection for medical machine learning</b><br>
@@ -7,9 +9,9 @@
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
-  <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-blue.svg">
-  <img alt="scikit-learn compatible" src="https://img.shields.io/badge/scikit--learn-compatible-orange.svg">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-0b5bd6.svg"></a>
+  <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-0b5bd6.svg">
+  <img alt="scikit-learn API" src="https://img.shields.io/badge/scikit--learn-API-12b5a6.svg">
   <a href="https://huggingface.co/spaces/ihyaabrar/pseul"><img alt="Demo on Hugging Face" src="https://img.shields.io/badge/%F0%9F%A4%97%20demo-Hugging%20Face-yellow.svg"></a>
 </p>
 
