@@ -1,0 +1,43 @@
+cff-version: 1.2.0
+message: "If you use PSEUL, please cite it as below. The paper describing the method is under review."
+title: "PSEUL: prediction-landmark-aware feature selection for medical machine learning"
+version: 0.1.0
+date-released: 2026-09-25
+license: MIT
+repository-code: "https://github.com/ihyaabrar/pseul"
+keywords:
+  - feature selection
+  - data leakage
+  - prediction landmark
+  - clinical machine learning
+  - SHAP
+authors:
+  - family-names: Abrar
+    given-names: "Ihya' Nashirudin"
+    orcid: "https://orcid.org/0009-0004-3993-3585"
+    affiliation: "Universitas Ahmad Dahlan"
+  - family-names: Biddinika
+    given-names: "Muhammad Kunta"
+    orcid: "https://orcid.org/0000-0003-4104-3755"
+    affiliation: "Universitas Ahmad Dahlan"
+  - family-names: Yuliansyah
+    given-names: Herman
+    orcid: "https://orcid.org/0000-0003-2088-6956"
+    affiliation: "Universitas Ahmad Dahlan"
+references:
+  - type: article
+    title: "Comparative evaluation of boosting ensemble models for medication adherence prediction in patients with non-communicable diseases"
+    authors:
+      - family-names: Abrar
+        given-names: "Ihya' Nashirudin"
+      - family-names: Biddinika
+        given-names: "Muhammad Kunta"
+      - family-names: Yuliansyah
+        given-names: Herman
+    journal: "Jurnal Sisfokom (Sistem Informasi dan Komputer)"
+    volume: 15
+    issue: 3
+    start: 462
+    end: 472
+    year: 2026
+    doi: "10.32736/sisfokom.v15i3.2712"
