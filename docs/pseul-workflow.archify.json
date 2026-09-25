@@ -1,0 +1,284 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "How PSEUL selects features",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "database": {
+          "label": "Input"
+        },
+        "backend": {
+          "label": "Computation"
+        },
+        "security": {
+          "label": "Registry control"
+        },
+        "frontend": {
+          "label": "Output"
+        }
+      }
+    },
+    "viewBox": [
+      1024,
+      652
+    ]
+  },
+  "lanes": [
+    {
+      "id": "reglane",
+      "label": "Signals from the registry"
+    },
+    {
+      "id": "datalane",
+      "label": "Signals from the data"
+    },
+    {
+      "id": "controls",
+      "label": "Controls and selection"
+    },
+    {
+      "id": "outputs",
+      "label": "Outcomes"
+    }
+  ],
+  "phases": [
+    {
+      "id": "estimate",
+      "label": "Estimate in K internal folds",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "control",
+      "label": "Score and control",
+      "fromCol": 2,
+      "toCol": 4,
+      "variant": "emphasis"
+    },
+    {
+      "id": "select",
+      "label": "Select",
+      "fromCol": 5,
+      "toCol": 5
+    }
+  ],
+  "mainPath": [
+    "data",
+    "sigps",
+    "audit",
+    "gatea",
+    "gatev",
+    "soft",
+    "greedy",
+    "select"
+  ],
+  "nodes": [
+    {
+      "id": "data",
+      "lane": "datalane",
+      "col": 0,
+      "type": "database",
+      "label": "Training data",
+      "sublabel": "full pool + outcome",
+      "width": 132
+    },
+    {
+      "id": "sigps",
+      "lane": "datalane",
+      "col": 1,
+      "type": "backend",
+      "label": "P · S",
+      "sublabel": "permutation AUC, SHAP",
+      "width": 132
+    },
+    {
+      "id": "audit",
+      "lane": "datalane",
+      "col": 2,
+      "type": "backend",
+      "label": "Audit score H",
+      "sublabel": ".30P+.20S+.25E+.25U",
+      "width": 132
+    },
+    {
+      "id": "outaudit",
+      "lane": "datalane",
+      "col": 3,
+      "type": "frontend",
+      "label": "PSEUL-Audit",
+      "sublabel": "unconstrained ranking",
+      "width": 132
+    },
+    {
+      "id": "registry",
+      "lane": "reglane",
+      "col": 0,
+      "type": "database",
+      "label": "Registry",
+      "sublabel": "one profile per feature",
+      "width": 132
+    },
+    {
+      "id": "sigeul",
+      "lane": "reglane",
+      "col": 1,
+      "type": "backend",
+      "label": "E · U · L",
+      "sublabel": "evidence, utility, leakage",
+      "width": 132
+    },
+    {
+      "id": "gatea",
+      "lane": "controls",
+      "col": 2,
+      "type": "security",
+      "label": "Landmark gate",
+      "sublabel": "available at prediction?",
+      "width": 132
+    },
+    {
+      "id": "gatev",
+      "lane": "controls",
+      "col": 3,
+      "type": "security",
+      "label": "Semantic veto",
+      "sublabel": "rated a label proxy?",
+      "width": 132
+    },
+    {
+      "id": "soft",
+      "lane": "controls",
+      "col": 4,
+      "type": "backend",
+      "label": "Soft controls",
+      "sublabel": "G · H · Q per fold",
+      "width": 132
+    },
+    {
+      "id": "greedy",
+      "lane": "controls",
+      "col": 5,
+      "type": "backend",
+      "label": "Greedy subset",
+      "sublabel": "minus redundancy",
+      "width": 132
+    },
+    {
+      "id": "excluded",
+      "lane": "outputs",
+      "col": 4,
+      "type": "security",
+      "label": "Excluded",
+      "sublabel": "reason recorded",
+      "width": 132
+    },
+    {
+      "id": "select",
+      "lane": "outputs",
+      "col": 5,
+      "type": "frontend",
+      "label": "PSEUL-Select",
+      "sublabel": "registry-concordant subset",
+      "width": 132
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-data-ps",
+      "from": "data",
+      "to": "sigps",
+      "role": "main"
+    },
+    {
+      "id": "e-ps-audit",
+      "from": "sigps",
+      "to": "audit",
+      "role": "main"
+    },
+    {
+      "id": "e-reg-eul",
+      "from": "registry",
+      "to": "sigeul"
+    },
+    {
+      "id": "e-eul-audit",
+      "from": "sigeul",
+      "to": "audit"
+    },
+    {
+      "id": "e-audit-out",
+      "from": "audit",
+      "to": "outaudit",
+      "role": "branch",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-audit-gate",
+      "from": "audit",
+      "to": "gatea",
+      "role": "main"
+    },
+    {
+      "id": "e-gate-veto",
+      "from": "gatea",
+      "to": "gatev",
+      "role": "main"
+    },
+    {
+      "id": "e-gate-out",
+      "from": "gatea",
+      "to": "excluded",
+      "label": "no",
+      "role": "error",
+      "variant": "security"
+    },
+    {
+      "id": "e-veto-soft",
+      "from": "gatev",
+      "to": "soft",
+      "role": "main"
+    },
+    {
+      "id": "e-veto-out",
+      "from": "gatev",
+      "to": "excluded",
+      "label": "yes",
+      "role": "error",
+      "variant": "security"
+    },
+    {
+      "id": "e-soft-greedy",
+      "from": "soft",
+      "to": "greedy",
+      "role": "main"
+    },
+    {
+      "id": "e-greedy-select",
+      "from": "greedy",
+      "to": "select",
+      "role": "main",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Two outputs",
+      "items": [
+        "PSEUL-Audit: what drives raw discrimination",
+        "PSEUL-Select: what the registry lets you use"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Read before use",
+      "items": [
+        "PSEUL enforces the registry; it does not detect leakage",
+        "Pass the full candidate pool: the leakage threshold is relative"
+      ]
+    }
+  ]
+}
