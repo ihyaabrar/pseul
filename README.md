@@ -120,6 +120,12 @@ registry's hard controls hold. `pseul/core.py` is a byte-for-byte copy of the
 study's `scripts/pseul.py` at commit `f7eb485`; a test fails if it is edited
 without updating that record.
 
+## Web demo
+
+[`hf_space/`](hf_space/) is a Gradio app for Hugging Face Spaces: upload a CSV and
+an optional registry, and see the audit ranking beside the selected subset.
+`python hf_space/deploy.py` publishes it after `hf auth login`.
+
 ## Citing
 
 The paper describing PSEUL is under review. Until it appears, please cite this
