@@ -37,50 +37,21 @@ metric.
 
 ## How it works
 
-```mermaid
-flowchart TD
-    REG[/"Feature registry<br/>one profile per feature"/]
-    DATA[("Training data<br/>full candidate pool<br/>+ binary outcome")]
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/pseul-workflow-dark.png">
+    <img src="assets/pseul-workflow-light.png" alt="PSEUL workflow: registry signals E, U, L and data signals P, S feed the audit score H, which gives PSEUL-Audit; the landmark gate and semantic veto exclude features with a recorded reason, then soft controls and greedy selection give PSEUL-Select" width="900">
+  </picture>
+</p>
 
-    subgraph SIG ["① Five signals, estimated in K internal folds"]
-        E["E · evidence relevance<br/>evidence + topic<br/>similarity"]
-        U["U · clinical utility<br/>intervention · stratification<br/>· feasibility"]
-        L["L · leakage risk<br/>ratings LD · DO · TP<br/>+ association with the label"]
-        S["S · SHAP stability<br/>attribution consistency"]
-        P["P · predictive utility<br/>permutation AUC loss"]
-    end
-
-    REG --> E & U & L
-    DATA --> S & P
-
-    H["Audit score<br/>H = 0.30 P + 0.20 S<br/>+ 0.25 E + 0.25 U"]
-    E & U & S & P --> H
-    H --> AUDIT(["PSEUL-Audit<br/>unconstrained ranking"])
-
-    subgraph HARD ["② Hard controls, from the registry"]
-        A{"Available at<br/>the landmark?"}
-        V{"Rated a<br/>label proxy?"}
-    end
-    H --> A
-    A -- yes --> V
-    A -- no --> OUT(["Excluded<br/>reason recorded"])
-    V -- yes --> OUT
-
-    subgraph SOFT ["③ Soft controls, per fold"]
-        PRE["Pre-score = G · H · Q<br/>utility gate<br/>G = min(1, U / θ_U)<br/>leakage penalty<br/>Q = 1 − σ(τ_L · (L − θ_L))"]
-    end
-    V -- no --> PRE
-
-    PRE --> GREEDY["④ Greedy selection<br/>pre-score − λ · redundancy<br/>stop at top_k or below τ_S"]
-    GREEDY --> SELECT(["PSEUL-Select<br/>registry-concordant subset"])
-
-    classDef output fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
-    classDef excluded fill:#ffebee,stroke:#c62828,color:#b71c1c
-    classDef gate fill:#fff8e1,stroke:#f9a825,color:#5d4037
-    class AUDIT,SELECT output
-    class OUT excluded
-    class A,V gate
-```
+The signals are estimated in K internal folds. The audit score is
+H = 0.30 P + 0.20 S + 0.25 E + 0.25 U. The soft controls multiply it by a utility
+gate G = min(1, U / θ_U) and a leakage penalty Q = 1 − σ(τ_L · (L − θ_L)), where
+θ_L is recalibrated in each fold from the leakage scores of the pool you pass.
+Greedy selection subtracts λ · redundancy (plus an uncertainty term that is off by
+default) and stops at `top_k` or when the best score falls below τ_S. The diagram
+source is [`docs/pseul-workflow.archify.json`](docs/pseul-workflow.archify.json).
+The interactive version is [`docs/pseul-workflow.html`](docs/pseul-workflow.html).
 
 Two outputs answer two different questions:
 
