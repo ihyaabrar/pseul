@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pseul"
+version = "0.1.0"
+description = "Prediction-landmark-aware feature selection for medical machine learning"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [
+    { name = "Ihya' Nashirudin Abrar" },
+    { name = "Muhammad Kunta Biddinika" },
+    { name = "Herman Yuliansyah" },
+]
+keywords = ["feature selection", "data leakage", "prediction landmark",
+            "clinical machine learning", "SHAP"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+# the lower bounds are the versions the study ran on (reproducibility/
+# requirements.txt in the study repository); nothing older was tested
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.0",
+    "scikit-learn>=1.4",
+    "shap>=0.45",
+]
+
+[project.optional-dependencies]
+# PSEUL takes any scikit-learn-compatible classifier; the study used LightGBM
+lightgbm = ["lightgbm>=4.0"]
+dev = ["pytest>=7", "lightgbm>=4.0"]
+
+[tool.setuptools]
+packages = ["pseul"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# SHAP's notice that its LightGBM binary output is now a list; core.py reads
+# both formats and takes the positive class
+filterwarnings = ["ignore:LightGBM binary classifier with TreeExplainer:UserWarning"]
